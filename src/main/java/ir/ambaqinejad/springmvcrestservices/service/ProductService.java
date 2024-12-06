@@ -11,4 +11,6 @@ public interface ProductService {
     Product getProductById(UUID id);
 
     Product createProduct(Product product);
+
+    Product updateProduct(UUID productId, Product product);
 }

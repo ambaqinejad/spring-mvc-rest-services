@@ -26,7 +26,7 @@ public class ProductController {
         Product savedProduct = productService.createProduct(product);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/api/v1/products/" + savedProduct.getId().toString());
-        return  new ResponseEntity<>(savedProduct, headers, HttpStatus.CREATED);
+        return new ResponseEntity<>(savedProduct, headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -38,5 +38,16 @@ public class ProductController {
     public Product getProductById(@PathVariable("productId") UUID id) {
         log.debug("Get product by id in controller. id: " + id + ".");
         return productService.getProductById(id);
+    }
+
+    @PutMapping("{productId}")
+    public ResponseEntity<Product> updateProduct(@PathVariable UUID productId, @RequestBody Product product) {
+        Product updatedProduct = productService.updateProduct(productId, product);
+        HttpHeaders headers = new HttpHeaders();
+        if (updatedProduct == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        headers.add("Location", "/api/v1/products/" + updatedProduct.getId().toString());
+        return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
     }
 }

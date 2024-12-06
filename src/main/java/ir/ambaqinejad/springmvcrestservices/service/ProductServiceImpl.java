@@ -81,4 +81,18 @@ public class ProductServiceImpl implements ProductService {
         products.put(savedProduct.getId(), savedProduct);
         return savedProduct;
     }
+
+    @Override
+    public Product updateProduct(UUID productId, Product product) {
+        Product existing = products.get(productId);
+        if (existing == null) {
+            return null;
+        }
+        existing.setName(product.getName());
+        existing.setPrice(product.getPrice());
+        existing.setQuantityOnHand(product.getQuantityOnHand());
+        existing.setModifiedDate(LocalDateTime.now());
+        products.put(existing.getId(), existing);
+        return existing;
+    }
 }
