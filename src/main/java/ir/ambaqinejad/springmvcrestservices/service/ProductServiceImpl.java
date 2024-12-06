@@ -65,4 +65,20 @@ public class ProductServiceImpl implements ProductService {
         log.debug("Get product by id in service. id: " + id.toString());
         return this.products.get(id);
     }
+
+    @Override
+    public Product createProduct(Product product) {
+        Product savedProduct = Product.builder()
+                .id(UUID.randomUUID())
+                .version(product.getVersion())
+                .name(product.getName())
+                .productStyle(product.getProductStyle())
+                .price(product.getPrice())
+                .quantityOnHand(product.getQuantityOnHand())
+                .createdDate(LocalDateTime.now())
+                .modifiedDate(LocalDateTime.now())
+                .build();
+        products.put(savedProduct.getId(), savedProduct);
+        return savedProduct;
+    }
 }
