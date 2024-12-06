@@ -50,4 +50,13 @@ public class ProductController {
         headers.add("Location", "/api/v1/products/" + updatedProduct.getId().toString());
         return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
     }
+
+    @DeleteMapping("{productId}")
+    public ResponseEntity<Product> deleteProduct(@PathVariable UUID productId) {
+        Product deletedProduct = productService.deleteProduct(productId);
+        if (deletedProduct == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(deletedProduct, HttpStatus.OK);
+    }
 }

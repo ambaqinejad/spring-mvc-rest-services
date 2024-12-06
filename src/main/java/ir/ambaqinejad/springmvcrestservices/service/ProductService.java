@@ -13,4 +13,6 @@ public interface ProductService {
     Product createProduct(Product product);
 
     Product updateProduct(UUID productId, Product product);
+
+    Product deleteProduct(UUID productId);
 }

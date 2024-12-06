@@ -95,4 +95,14 @@ public class ProductServiceImpl implements ProductService {
         products.put(existing.getId(), existing);
         return existing;
     }
+
+    @Override
+    public Product deleteProduct(UUID productId) {
+        Product deletedProduct = products.get(productId);
+        if (deletedProduct == null) {
+            return null;
+        }
+        products.remove(productId);
+        return deletedProduct;
+    }
 }
