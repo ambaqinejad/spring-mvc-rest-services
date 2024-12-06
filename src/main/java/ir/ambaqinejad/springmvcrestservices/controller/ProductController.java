@@ -3,6 +3,7 @@ package ir.ambaqinejad.springmvcrestservices.controller;
 import ir.ambaqinejad.springmvcrestservices.model.Product;
 import ir.ambaqinejad.springmvcrestservices.service.ProductService;
 import org.slf4j.Logger;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,9 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
         Product savedProduct = productService.createProduct(product);
-        return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", "/api/v1/products/" + savedProduct.getId().toString());
+        return  new ResponseEntity<>(savedProduct, headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(method = RequestMethod.GET)
