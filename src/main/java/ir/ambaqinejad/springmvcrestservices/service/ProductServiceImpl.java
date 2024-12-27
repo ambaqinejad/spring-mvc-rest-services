@@ -4,6 +4,7 @@ import ir.ambaqinejad.springmvcrestservices.model.Product;
 import ir.ambaqinejad.springmvcrestservices.model.ProductStyle;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -92,6 +93,7 @@ public class ProductServiceImpl implements ProductService {
         existing.setPrice(product.getPrice());
         existing.setQuantityOnHand(product.getQuantityOnHand());
         existing.setModifiedDate(LocalDateTime.now());
+        existing.setProductStyle(product.getProductStyle());
         products.put(existing.getId(), existing);
         return existing;
     }
@@ -104,5 +106,28 @@ public class ProductServiceImpl implements ProductService {
         }
         products.remove(productId);
         return deletedProduct;
+    }
+
+    @Override
+    public Product patchProduct(UUID id, Product product) {
+        Product existedProduct = products.get(id);
+        if (existedProduct == null) {
+            return null;
+        }
+        if (StringUtils.hasText(product.getName())) {
+            existedProduct.setName(product.getName());
+        }
+        if (product.getProductStyle() != null) {
+            existedProduct.setProductStyle(product.getProductStyle());
+        }
+        if (product.getPrice() != null) {
+            existedProduct.setPrice(product.getPrice());
+        }
+        if (product.getQuantityOnHand() != null) {
+            existedProduct.setQuantityOnHand(product.getQuantityOnHand());
+        }
+        existedProduct.setModifiedDate(LocalDateTime.now());
+        products.put(id, existedProduct); // this is not necessary because it changes with pointer
+        return existedProduct;
     }
 }

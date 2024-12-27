@@ -59,4 +59,13 @@ public class ProductController {
         }
         return new ResponseEntity<>(deletedProduct, HttpStatus.OK);
     }
+
+    @PatchMapping("{productId}")
+    public ResponseEntity<Product> updateProductById(@PathVariable UUID productId, @RequestBody Product product) {
+        Product patchedProduct = productService.patchProduct(productId, product);
+        if (patchedProduct == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(patchedProduct, HttpStatus.OK);
+    }
 }
