@@ -10,14 +10,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.core.Is.is;
 
 @WebMvcTest(controllers = ProductController.class)
 class ProductControllerTest {
@@ -41,11 +41,18 @@ class ProductControllerTest {
     @Test
     void getProductById() throws Exception {
         Product product = productServiceImpl.getAllProducts().get(0);
-        given(productService.getProductById(any(UUID.class))).willReturn(product);
-        mockMvc.perform(get("/api/v1/products/" + UUID.randomUUID())
+        given(productService.getProductById(product.getId())).willReturn(product);
+        mockMvc.perform(get("/api/v1/products/" + product.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is(product.getId().toString())))
+                .andExpect(jsonPath("$.name", is(product.getName())))
+                .andExpect(jsonPath("$.productStyle", is(product.getProductStyle().toString())))
+                .andExpect(jsonPath("$.quantityOnHand", is(product.getQuantityOnHand())));
+//                .andExpect(jsonPath("$.price", is(product.getPrice())))
+//                .andExpect(jsonPath("$.createdDate", is(product.getCreatedDate().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))));
+//                .andExpect(jsonPath("$.modifiedDate", is(product.getModifiedDate().toString())));
     }
 
     @Test
