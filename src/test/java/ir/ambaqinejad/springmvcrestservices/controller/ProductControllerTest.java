@@ -18,8 +18,8 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.core.Is.is;
 
@@ -83,7 +83,13 @@ class ProductControllerTest {
     }
 
     @Test
-    void updateProduct() {
+    void updateProduct() throws Exception {
+        Product product = productServiceImpl.getAllProducts().get(0);
+        mockMvc.perform(put("/api/v1/products/" + product.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(product)));
+        verify(productService).updateProduct(any(UUID.class), any(Product.class));
     }
 
     @Test
