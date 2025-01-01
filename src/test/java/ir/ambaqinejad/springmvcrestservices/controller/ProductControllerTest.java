@@ -1,8 +1,11 @@
 package ir.ambaqinejad.springmvcrestservices.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ir.ambaqinejad.springmvcrestservices.model.Product;
 import ir.ambaqinejad.springmvcrestservices.service.ProductService;
 import ir.ambaqinejad.springmvcrestservices.service.ProductServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -16,29 +19,47 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.core.Is.is;
 
 @WebMvcTest(controllers = ProductController.class)
 class ProductControllerTest {
-
-    ProductServiceImpl productServiceImpl = new ProductServiceImpl();
-
-
+    ProductServiceImpl productServiceImpl;
     @Autowired
     MockMvc mockMvc;
+    @Autowired
+    ObjectMapper mapper;
     @MockitoBean
     ProductService productService;
 
+    @BeforeEach
+    void setUp() {
+        productServiceImpl = new ProductServiceImpl();
+    }
+
     @Test
-    void createProduct() {
+    void createProduct() throws Exception {
+        // ObjectMapper mapper = new ObjectMapper();
+        // mapper.findAndRegisterModules();
+        Product product = productServiceImpl.getAllProducts().get(0);
+        product.setId(null);
+        product.setVersion(null);
+        given(productService.createProduct(any(Product.class))).willReturn(productServiceImpl.getAllProducts().get(1));
+        mockMvc.perform(post("/api/v1/products")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(product)))
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"));
+        // System.out.println(mapper.writeValueAsString(product));
     }
 
     @Test
     void getAllProducts() throws Exception {
         given(productService.getAllProducts()).willReturn(productServiceImpl.getAllProducts());
         mockMvc.perform(get("/api/v1/products")
-                .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()", is(3)));
@@ -49,7 +70,7 @@ class ProductControllerTest {
         Product product = productServiceImpl.getAllProducts().get(0);
         given(productService.getProductById(product.getId())).willReturn(product);
         mockMvc.perform(get("/api/v1/products/" + product.getId())
-                .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(product.getId().toString())))
