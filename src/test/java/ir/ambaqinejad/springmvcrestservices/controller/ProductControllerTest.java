@@ -7,6 +7,7 @@ import ir.ambaqinejad.springmvcrestservices.service.ProductService;
 import ir.ambaqinejad.springmvcrestservices.service.ProductServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -22,6 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WebMvcTest(controllers = ProductController.class)
 class ProductControllerTest {
@@ -79,7 +81,7 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.quantityOnHand", is(product.getQuantityOnHand())));
 //                .andExpect(jsonPath("$.price", is(product.getPrice())))
 //                .andExpect(jsonPath("$.createdDate", is(product.getCreatedDate().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))));
-//                .andExpect(jsonPath("$.modifiedDate", is(product.getModifiedDate().toString())));
+//                .andEx pect(jsonPath("$.modifiedDate", is(product.getModifiedDate().toString())));
     }
 
     @Test
@@ -93,7 +95,37 @@ class ProductControllerTest {
     }
 
     @Test
-    void deleteProduct() {
+    void deleteProduct() throws Exception {
+        Product product = productServiceImpl.getAllProducts().get(0);
+        mockMvc.perform(delete("/api/v1/products/" + product.getId())
+                .accept(MediaType.APPLICATION_JSON));
+        ArgumentCaptor<UUID> uuidCaptor = ArgumentCaptor.forClass(UUID.class);
+        verify(productService).deleteProduct(uuidCaptor.capture());
+        assertThat(product.getId()).isEqualTo(uuidCaptor.getValue());
+    }
+
+    @Test
+    void deleteProductIfNotExists() throws Exception {
+        UUID uuid = UUID.randomUUID();
+        mockMvc.perform(delete("/api/v1/products/" + uuid)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+        ArgumentCaptor<UUID> uuidCaptor = ArgumentCaptor.forClass(UUID.class);
+        verify(productService).deleteProduct(uuidCaptor.capture());
+        assertThat(uuidCaptor.getValue()).isEqualTo(uuid);
+    }
+
+    @Test
+    void deleteProductIfExists() throws Exception {
+        Product product = productServiceImpl.getAllProducts().get(0);
+        given(productService.deleteProduct(product.getId())).willReturn(product);
+        mockMvc.perform(delete("/api/v1/products/" + product.getId())
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(product.getId().toString())));
+        ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
+        verify(productService).deleteProduct(uuidArgumentCaptor.capture());
+        assertThat(uuidArgumentCaptor.getValue()).isEqualTo(product.getId());
     }
 
     @Test
