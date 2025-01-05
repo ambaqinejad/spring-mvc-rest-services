@@ -8,6 +8,7 @@ import ir.ambaqinejad.springmvcrestservices.service.ProductServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -15,6 +16,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -34,6 +37,11 @@ class ProductControllerTest {
     ObjectMapper mapper;
     @MockitoBean
     ProductService productService;
+
+    @Captor
+    ArgumentCaptor<Product> productCaptor;
+    @Captor
+    ArgumentCaptor<UUID> uuidCaptor;
 
     @BeforeEach
     void setUp() {
@@ -129,6 +137,17 @@ class ProductControllerTest {
     }
 
     @Test
-    void updateProductById() {
+    void updateProductById() throws Exception {
+        Product product = productServiceImpl.getAllProducts().get(0);
+        Map<String, Object> productMap = new HashMap<>();
+        productMap.put("name", "new name");
+        mockMvc.perform(patch("/api/v1/products/" + product.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(productMap)))
+                .andExpect(status().isNotFound());
+        verify(productService).patchProduct(uuidCaptor.capture(), productCaptor.capture());
+        assertThat(uuidCaptor.getValue()).isEqualTo(product.getId());
+        assertThat(productCaptor.getValue().getName()).isEqualTo(productMap.get("name"));
     }
 }
