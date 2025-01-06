@@ -1,6 +1,6 @@
 package ir.ambaqinejad.springmvcrestservices.service;
 
-import ir.ambaqinejad.springmvcrestservices.model.Product;
+import ir.ambaqinejad.springmvcrestservices.model.ProductDTO;
 import ir.ambaqinejad.springmvcrestservices.model.ProductStyle;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
@@ -14,11 +14,11 @@ import java.util.*;
 public class ProductServiceImpl implements ProductService {
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(ProductServiceImpl.class);
-    private Map<UUID, Product> products;
+    private Map<UUID, ProductDTO> products;
 
     public ProductServiceImpl() {
         this.products = new HashMap<>();
-        Product product1 = Product.builder()
+        ProductDTO productDTO1 = ProductDTO.builder()
                 .id(UUID.randomUUID())
                 .version(1)
                 .name("Mobile")
@@ -29,7 +29,7 @@ public class ProductServiceImpl implements ProductService {
                 .modifiedDate(LocalDateTime.now())
                 .build();
 
-        Product product2 = Product.builder()
+        ProductDTO productDTO2 = ProductDTO.builder()
                 .id(UUID.randomUUID())
                 .version(1)
                 .name("PS5")
@@ -40,7 +40,7 @@ public class ProductServiceImpl implements ProductService {
                 .modifiedDate(LocalDateTime.now())
                 .build();
 
-        Product product3 = Product.builder()
+        ProductDTO productDTO3 = ProductDTO.builder()
                 .id(UUID.randomUUID())
                 .version(1)
                 .name("Laptop")
@@ -51,83 +51,83 @@ public class ProductServiceImpl implements ProductService {
                 .modifiedDate(LocalDateTime.now())
                 .build();
 
-        products.put(product1.getId(), product1);
-        products.put(product2.getId(), product2);
-        products.put(product3.getId(), product3);
+        products.put(productDTO1.getId(), productDTO1);
+        products.put(productDTO2.getId(), productDTO2);
+        products.put(productDTO3.getId(), productDTO3);
     }
 
     @Override
-    public List<Product> getAllProducts() {
+    public List<ProductDTO> getAllProducts() {
         return new ArrayList<>(products.values());
     }
 
     @Override
-    public Optional<Product> getProductById(UUID id) {
+    public Optional<ProductDTO> getProductById(UUID id) {
         log.debug("Get product by id in service. id: " + id.toString());
         return Optional.of(products.get(id));
     }
 
     @Override
-    public Product createProduct(Product product) {
-        Product savedProduct = Product.builder()
+    public ProductDTO createProduct(ProductDTO productDTO) {
+        ProductDTO savedProductDTO = ProductDTO.builder()
                 .id(UUID.randomUUID())
-                .version(product.getVersion())
-                .name(product.getName())
-                .productStyle(product.getProductStyle())
-                .price(product.getPrice())
-                .quantityOnHand(product.getQuantityOnHand())
+                .version(productDTO.getVersion())
+                .name(productDTO.getName())
+                .productStyle(productDTO.getProductStyle())
+                .price(productDTO.getPrice())
+                .quantityOnHand(productDTO.getQuantityOnHand())
                 .createdDate(LocalDateTime.now())
                 .modifiedDate(LocalDateTime.now())
                 .build();
-        products.put(savedProduct.getId(), savedProduct);
-        return savedProduct;
+        products.put(savedProductDTO.getId(), savedProductDTO);
+        return savedProductDTO;
     }
 
     @Override
-    public Product updateProduct(UUID productId, Product product) {
-        Product existing = products.get(productId);
+    public ProductDTO updateProduct(UUID productId, ProductDTO productDTO) {
+        ProductDTO existing = products.get(productId);
         if (existing == null) {
             return null;
         }
-        existing.setName(product.getName());
-        existing.setPrice(product.getPrice());
-        existing.setQuantityOnHand(product.getQuantityOnHand());
+        existing.setName(productDTO.getName());
+        existing.setPrice(productDTO.getPrice());
+        existing.setQuantityOnHand(productDTO.getQuantityOnHand());
         existing.setModifiedDate(LocalDateTime.now());
-        existing.setProductStyle(product.getProductStyle());
+        existing.setProductStyle(productDTO.getProductStyle());
         products.put(existing.getId(), existing);
         return existing;
     }
 
     @Override
-    public Product deleteProduct(UUID productId) {
-        Product deletedProduct = products.get(productId);
-        if (deletedProduct == null) {
+    public ProductDTO deleteProduct(UUID productId) {
+        ProductDTO deletedProductDTO = products.get(productId);
+        if (deletedProductDTO == null) {
             return null;
         }
         products.remove(productId);
-        return deletedProduct;
+        return deletedProductDTO;
     }
 
     @Override
-    public Product patchProduct(UUID id, Product product) {
-        Product existedProduct = products.get(id);
-        if (existedProduct == null) {
+    public ProductDTO patchProduct(UUID id, ProductDTO productDTO) {
+        ProductDTO existedProductDTO = products.get(id);
+        if (existedProductDTO == null) {
             return null;
         }
-        if (StringUtils.hasText(product.getName())) {
-            existedProduct.setName(product.getName());
+        if (StringUtils.hasText(productDTO.getName())) {
+            existedProductDTO.setName(productDTO.getName());
         }
-        if (product.getProductStyle() != null) {
-            existedProduct.setProductStyle(product.getProductStyle());
+        if (productDTO.getProductStyle() != null) {
+            existedProductDTO.setProductStyle(productDTO.getProductStyle());
         }
-        if (product.getPrice() != null) {
-            existedProduct.setPrice(product.getPrice());
+        if (productDTO.getPrice() != null) {
+            existedProductDTO.setPrice(productDTO.getPrice());
         }
-        if (product.getQuantityOnHand() != null) {
-            existedProduct.setQuantityOnHand(product.getQuantityOnHand());
+        if (productDTO.getQuantityOnHand() != null) {
+            existedProductDTO.setQuantityOnHand(productDTO.getQuantityOnHand());
         }
-        existedProduct.setModifiedDate(LocalDateTime.now());
-        products.put(id, existedProduct); // this is not necessary because it changes with pointer
-        return existedProduct;
+        existedProductDTO.setModifiedDate(LocalDateTime.now());
+        products.put(id, existedProductDTO); // this is not necessary because it changes with pointer
+        return existedProductDTO;
     }
 }

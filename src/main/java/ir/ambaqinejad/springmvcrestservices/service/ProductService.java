@@ -1,21 +1,21 @@
 package ir.ambaqinejad.springmvcrestservices.service;
 
-import ir.ambaqinejad.springmvcrestservices.model.Product;
+import ir.ambaqinejad.springmvcrestservices.model.ProductDTO;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface ProductService {
-    List<Product> getAllProducts();
+    List<ProductDTO> getAllProducts();
 
-    Optional<Product> getProductById(UUID id);
+    Optional<ProductDTO> getProductById(UUID id);
 
-    Product createProduct(Product product);
+    ProductDTO createProduct(ProductDTO productDTO);
 
-    Product updateProduct(UUID productId, Product product);
+    ProductDTO updateProduct(UUID productId, ProductDTO productDTO);
 
-    Product deleteProduct(UUID productId);
+    ProductDTO deleteProduct(UUID productId);
 
-    Product patchProduct(UUID id, Product product);
+    ProductDTO patchProduct(UUID id, ProductDTO productDTO);
 }

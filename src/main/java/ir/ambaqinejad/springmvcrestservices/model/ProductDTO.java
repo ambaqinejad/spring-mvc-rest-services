@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public class Product {
+public class ProductDTO {
     private UUID id;
     private Integer version;
     private String name;
@@ -14,7 +14,7 @@ public class Product {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
-    Product(UUID id, Integer version, String name, ProductStyle productStyle, Integer quantityOnHand, BigDecimal price, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    ProductDTO(UUID id, Integer version, String name, ProductStyle productStyle, Integer quantityOnHand, BigDecimal price, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.version = version;
         this.name = name;
@@ -95,8 +95,8 @@ public class Product {
 
     public boolean equals(final Object o) {
         if (o == this) return true;
-        if (!(o instanceof Product)) return false;
-        final Product other = (Product) o;
+        if (!(o instanceof ProductDTO)) return false;
+        final ProductDTO other = (ProductDTO) o;
         if (!other.canEqual((Object) this)) return false;
         final Object this$id = this.getId();
         final Object other$id = other.getId();
@@ -130,7 +130,7 @@ public class Product {
     }
 
     protected boolean canEqual(final Object other) {
-        return other instanceof Product;
+        return other instanceof ProductDTO;
     }
 
     public int hashCode() {
@@ -212,8 +212,8 @@ public class Product {
             return this;
         }
 
-        public Product build() {
-            return new Product(this.id, this.version, this.name, this.productStyle, this.quantityOnHand, this.price, this.createdDate, this.modifiedDate);
+        public ProductDTO build() {
+            return new ProductDTO(this.id, this.version, this.name, this.productStyle, this.quantityOnHand, this.price, this.createdDate, this.modifiedDate);
         }
 
         public String toString() {

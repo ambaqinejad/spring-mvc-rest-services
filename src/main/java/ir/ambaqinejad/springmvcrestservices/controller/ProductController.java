@@ -1,6 +1,6 @@
 package ir.ambaqinejad.springmvcrestservices.controller;
 
-import ir.ambaqinejad.springmvcrestservices.model.Product;
+import ir.ambaqinejad.springmvcrestservices.model.ProductDTO;
 import ir.ambaqinejad.springmvcrestservices.service.ProductService;
 import org.slf4j.Logger;
 import org.springframework.http.HttpHeaders;
@@ -22,15 +22,15 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        Product savedProduct = productService.createProduct(product);
+    public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO productDTO) {
+        ProductDTO savedProductDTO = productService.createProduct(productDTO);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "/api/v1/products/" + savedProduct.getId().toString());
-        return new ResponseEntity<>(savedProduct, headers, HttpStatus.CREATED);
+        headers.add("Location", "/api/v1/products/" + savedProductDTO.getId().toString());
+        return new ResponseEntity<>(savedProductDTO, headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<Product> getAllProducts() {
+    public List<ProductDTO> getAllProducts() {
         return this.productService.getAllProducts();
     }
 
@@ -41,37 +41,37 @@ public class ProductController {
     } */
 
     @RequestMapping(value = "/{productId}", method = RequestMethod.GET)
-    public Product getProductById(@PathVariable("productId") UUID id) {
+    public ProductDTO getProductById(@PathVariable("productId") UUID id) {
         log.debug("Get product by id in controller. id: " + id + ".");
         return productService.getProductById(id).orElseThrow(NotFoundException::new);
     }
 
     @PutMapping("{productId}")
-    public ResponseEntity<Product> updateProduct(@PathVariable UUID productId, @RequestBody Product product) {
-        Product updatedProduct = productService.updateProduct(productId, product);
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable UUID productId, @RequestBody ProductDTO productDTO) {
+        ProductDTO updatedProductDTO = productService.updateProduct(productId, productDTO);
         HttpHeaders headers = new HttpHeaders();
-        if (updatedProduct == null) {
+        if (updatedProductDTO == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        headers.add("Location", "/api/v1/products/" + updatedProduct.getId().toString());
-        return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
+        headers.add("Location", "/api/v1/products/" + updatedProductDTO.getId().toString());
+        return new ResponseEntity<>(updatedProductDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("{productId}")
-    public ResponseEntity<Product> deleteProduct(@PathVariable UUID productId) {
-        Product deletedProduct = productService.deleteProduct(productId);
-        if (deletedProduct == null) {
+    public ResponseEntity<ProductDTO> deleteProduct(@PathVariable UUID productId) {
+        ProductDTO deletedProductDTO = productService.deleteProduct(productId);
+        if (deletedProductDTO == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(deletedProduct, HttpStatus.OK);
+        return new ResponseEntity<>(deletedProductDTO, HttpStatus.OK);
     }
 
     @PatchMapping("{productId}")
-    public ResponseEntity<Product> updateProductById(@PathVariable UUID productId, @RequestBody Product product) {
-        Product patchedProduct = productService.patchProduct(productId, product);
-        if (patchedProduct == null) {
+    public ResponseEntity<ProductDTO> updateProductById(@PathVariable UUID productId, @RequestBody ProductDTO productDTO) {
+        ProductDTO patchedProductDTO = productService.patchProduct(productId, productDTO);
+        if (patchedProductDTO == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(patchedProduct, HttpStatus.OK);
+        return new ResponseEntity<>(patchedProductDTO, HttpStatus.OK);
     }
 }
