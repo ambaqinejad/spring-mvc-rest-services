@@ -34,11 +34,11 @@ public class ProductController {
         return this.productService.getAllProducts();
     }
 
-    @ExceptionHandler(NotFoundException.class)
+    /* @ExceptionHandler(NotFoundException.class)
     public ResponseEntity handleNotFoundException(NotFoundException e) {
         System.out.println(e.getMessage());
         return ResponseEntity.notFound().build();
-    }
+    } */
 
     @RequestMapping(value = "/{productId}", method = RequestMethod.GET)
     public Product getProductById(@PathVariable("productId") UUID id) {
