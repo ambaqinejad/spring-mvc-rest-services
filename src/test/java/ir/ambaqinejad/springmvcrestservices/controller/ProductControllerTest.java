@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -78,7 +79,7 @@ class ProductControllerTest {
     @Test
     void getProductById() throws Exception {
         Product product = productServiceImpl.getAllProducts().get(0);
-        given(productService.getProductById(product.getId())).willReturn(product);
+        given(productService.getProductById(product.getId())).willReturn(Optional.of(product));
         mockMvc.perform(get("/api/v1/products/" + product.getId())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -153,7 +154,8 @@ class ProductControllerTest {
 
     @Test
     void getProductByIdNotFound() throws Exception {
-        given(productService.getProductById(any(UUID.class))).willThrow(NotFoundException.class);
+//        given(productService.getProductById(any(UUID.class))).willThrow(NotFoundException.class);
+        given(productService.getProductById(any(UUID.class))).willReturn(Optional.empty());
         mockMvc.perform(get("/api/v1/products/" + UUID.randomUUID()))
                 .andExpect(status().isNotFound());
     }

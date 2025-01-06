@@ -62,9 +62,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product getProductById(UUID id) {
+    public Optional<Product> getProductById(UUID id) {
         log.debug("Get product by id in service. id: " + id.toString());
-        return this.products.get(id);
+        return Optional.of(products.get(id));
     }
 
     @Override

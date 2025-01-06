@@ -43,7 +43,7 @@ public class ProductController {
     @RequestMapping(value = "/{productId}", method = RequestMethod.GET)
     public Product getProductById(@PathVariable("productId") UUID id) {
         log.debug("Get product by id in controller. id: " + id + ".");
-        return productService.getProductById(id);
+        return productService.getProductById(id).orElseThrow(NotFoundException::new);
     }
 
     @PutMapping("{productId}")
