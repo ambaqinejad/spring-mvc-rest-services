@@ -150,4 +150,11 @@ class ProductControllerTest {
         assertThat(uuidCaptor.getValue()).isEqualTo(product.getId());
         assertThat(productCaptor.getValue().getName()).isEqualTo(productMap.get("name"));
     }
+
+    @Test
+    void getProductByIdNotFound() throws Exception {
+        given(productService.getProductById(any(UUID.class))).willThrow(NotFoundException.class);
+        mockMvc.perform(get("/api/v1/products/" + UUID.randomUUID()))
+                .andExpect(status().isNotFound());
+    }
 }
