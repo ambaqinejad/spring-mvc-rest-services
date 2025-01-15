@@ -1,6 +1,7 @@
 package ir.ambaqinejad.springmvcrestservices.controller;
 
 import ir.ambaqinejad.springmvcrestservices.entity.Product;
+import ir.ambaqinejad.springmvcrestservices.mapper.ProductMapper;
 import ir.ambaqinejad.springmvcrestservices.model.ProductDTO;
 import ir.ambaqinejad.springmvcrestservices.repository.ProductRepository;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,8 @@ class ProductControllerIntegrationTest {
     ProductController productController;
     @Autowired
     ProductRepository productRepository;
+    @Autowired
+    ProductMapper productMapper;
 
     @Rollback
     @Transactional
@@ -73,6 +76,19 @@ class ProductControllerIntegrationTest {
 
     @Test
     void updateProduct() {
+        Product product = productRepository.findAll().getFirst();
+        ProductDTO productDTO = productMapper.productToProductDTO(product);
+        productDTO.setId(null);
+        productDTO.setVersion(null);
+        productDTO.setName("Updated Product");
+
+        ResponseEntity<ProductDTO> updatedProduct = productController.updateProduct(product.getId(), productDTO);
+        assertThat(updatedProduct.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
+
+        if (productRepository.findById(product.getId()).isPresent()) {
+            Product product2 = productRepository.findById(product.getId()).get();
+            assertThat(product2.getName()).isEqualTo("Updated Product");
+        }
     }
 
     @Test

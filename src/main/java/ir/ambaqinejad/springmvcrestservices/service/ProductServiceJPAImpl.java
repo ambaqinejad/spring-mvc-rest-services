@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,7 +47,15 @@ public class ProductServiceJPAImpl implements ProductService {
 
     @Override
     public ProductDTO updateProduct(UUID productId, ProductDTO productDTO) {
-        return null;
+        AtomicReference<ProductDTO> updatedProductDTO = new AtomicReference<>();
+        productRepository.findById(productId).ifPresent(product -> {
+            product.setName(productDTO.getName());
+            product.setProductStyle(productDTO.getProductStyle());
+            product.setPrice(productDTO.getPrice());
+            updatedProductDTO.set(productMapper.productToProductDTO(product));
+            productRepository.save(product);
+        });
+        return updatedProductDTO.get();
     }
 
     @Override
