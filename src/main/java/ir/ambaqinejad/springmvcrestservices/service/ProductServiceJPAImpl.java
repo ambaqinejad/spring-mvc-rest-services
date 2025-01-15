@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 @Primary
@@ -21,12 +23,19 @@ public class ProductServiceJPAImpl implements ProductService {
 
     @Override
     public List<ProductDTO> getAllProducts() {
-        return List.of();
+        return productRepository.findAll()
+                .stream()
+                .map(productMapper::productToProductDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     public Optional<ProductDTO> getProductById(UUID id) {
-        return Optional.empty();
+        return Optional
+                .ofNullable(
+                        productMapper.productToProductDTO(productRepository.findById(id)
+                                .orElse(null))
+                );
     }
 
     @Override
