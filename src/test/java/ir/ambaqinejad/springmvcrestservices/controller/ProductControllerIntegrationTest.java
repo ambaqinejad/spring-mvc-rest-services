@@ -4,13 +4,15 @@ import ir.ambaqinejad.springmvcrestservices.entity.Product;
 import ir.ambaqinejad.springmvcrestservices.model.ProductDTO;
 import ir.ambaqinejad.springmvcrestservices.repository.ProductRepository;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,15 +26,27 @@ class ProductControllerIntegrationTest {
     @Autowired
     ProductRepository productRepository;
 
+    @Rollback
+    @Transactional
     @Test
     void createProduct() {
+        ProductDTO productDTO = ProductDTO.builder()
+                .name("New Product")
+                .build();
+        ResponseEntity<ProductDTO> responseEntity = productController.createProduct(productDTO);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(201));
+        assertThat(responseEntity.getHeaders().getLocation()).isNotNull();
+        String locationUUID = responseEntity.getHeaders().getLocation().getPath().split("/")[4];
+        UUID savedUUID = UUID.fromString(locationUUID);
+        Optional<Product> product = productRepository.findById(savedUUID);
+        assertThat(product).isPresent();
     }
 
     @Test
     void getAllProducts() {
         List<ProductDTO> products = productController.getAllProducts();
         assertThat(products.size()).isEqualTo(2);
-        assertThat(products.get(0).getName()).isEqualTo("first");
+        assertThat(products.getFirst().getName()).isEqualTo("first");
     }
 
     @Rollback
@@ -46,7 +60,7 @@ class ProductControllerIntegrationTest {
 
     @Test
     void getProductById() {
-        Product product = productRepository.findAll().get(0);
+        Product product = productRepository.findAll().getFirst();
         ProductDTO productDTO = productController.getProductById(product.getId());
         assertThat(productDTO).isNotNull();
         assertThat(productDTO.getName()).isEqualTo(product.getName());
@@ -54,9 +68,7 @@ class ProductControllerIntegrationTest {
 
     @Test
     void getProductByIdNotFoundException() {
-        assertThrows(NotFoundException.class, () -> {
-            productController.getProductById(UUID.randomUUID());
-        });
+        assertThrows(NotFoundException.class, () -> productController.getProductById(UUID.randomUUID()));
     }
 
     @Test

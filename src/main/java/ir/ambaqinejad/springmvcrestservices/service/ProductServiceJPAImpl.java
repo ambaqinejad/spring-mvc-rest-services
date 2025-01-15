@@ -1,5 +1,6 @@
 package ir.ambaqinejad.springmvcrestservices.service;
 
+import ir.ambaqinejad.springmvcrestservices.entity.Product;
 import ir.ambaqinejad.springmvcrestservices.mapper.ProductMapper;
 import ir.ambaqinejad.springmvcrestservices.model.ProductDTO;
 import ir.ambaqinejad.springmvcrestservices.repository.ProductRepository;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,7 +40,8 @@ public class ProductServiceJPAImpl implements ProductService {
 
     @Override
     public ProductDTO createProduct(ProductDTO productDTO) {
-        return null;
+        Product product = productMapper.productDTOToProduct(productDTO);
+        return productMapper.productToProductDTO(productRepository.save(product));
     }
 
     @Override
